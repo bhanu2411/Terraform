@@ -30,7 +30,7 @@ resource "azurerm_resource_group" "resource_group" {
 
 # Create a virtual network within the resource group
 resource "azurerm_virtual_network" "vnet" {
-  name                = locals.baseResourceName + "-vnet"
+  name                = "${local.baseResourceName}-vnet"
   resource_group_name = azurerm_resource_group.resource_group.name
   location            = var.location
   address_space       = var.ip

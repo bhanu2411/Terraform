@@ -6,6 +6,8 @@ resource "azurerm_storage_account" "sa" {
   account_tier             = "Standard"
   account_replication_type = "GRS"
   https_traffic_only_enabled = true
+  allow_nested_items_to_be_public = false
+  min_tls_version = "TLS1_2"
   tags = {
     environment = var.environment
   }

@@ -1,10 +1,4 @@
 terraform {
-  backend "azurerm" {
-    resource_group_name = "tfstate-rg"
-    storage_account_name = "tfstate"
-    container_name       = "tfstate"
-    key                  = "terraform.tfstate"
-  }
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -13,14 +7,9 @@ terraform {
   }
 }
 
-
-# Configure the Microsoft Azure Provider
-provider "azurerm" {
-  resource_provider_registrations = "none" # This is only required when the User, Service Principal, or Identity running Terraform lacks the permissions to register Azure Resource Providers.
-  tenant_id       = var.tenant_id
-  client_id       = var.client_id
-  client_secret   = var.client_secret
-  subscription_id = var.subscription_id
+  provider "azurerm" {
+      # No client_secret here — set these env vars in CI instead:
+  # ARM_CLIENT_SECRET, ARM_CLIENT_ID, ARM_TENANT_ID, ARM_SUBSCRIPTION_ID
   features {}
 }
 

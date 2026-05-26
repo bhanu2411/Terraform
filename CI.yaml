@@ -3,37 +3,65 @@ trigger:
     include:
       - master
 
+parameters:
+  - name: environment
+    type: string
+    default: dev
+    values: [dev, test, prod]
+
 pool:
   vmImage: 'ubuntu-latest'
+
 stages:
 - stage: Terraform
-  displayName: 'Terraform'
+  displayName: 'Terraform ${{ parameters.environment }}'
   jobs:
   - job: Terraform
-    displayName: 'Terraform'
     steps:
     - task: TerraformInstaller@0
-      displayName: 'Install Terraform'
       inputs:
         terraformVersion: '1.5.7'
+
     - task: AzureCLI@2
-      displayName: 'Azure CLI Login'
+      displayName: 'Azure Login'
       inputs:
-        azureSubscription: 'Azure DevOps Service Connection'
+        azureSubscription: 'terraform-azure-devops-sp'  # service connection name
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
-        inlineScript: |
-          echo "Logging in to Azure CLI..."
-          az account show
+        inlineScript: az account show
+
     - task: TerraformTaskV4@4
       displayName: 'Terraform Init'
       inputs:
         provider: 'azurerm'
         command: 'init'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure/env-dev'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure/env-${{ parameters.environment }}'
+        backendServiceArm: 'terraform-azure-devops-sp'  # service connection name
+        backendAzureRmResourceGroupName: 'tfstate-rg'
+        backendAzureRmStorageAccountName: 'tfstatestore'
+        backendAzureRmContainerName: 'tfstate'
+        backendAzureRmKey: '${{ parameters.environment }}.terraform.tfstate'
+
+    - task: TerraformTaskV4@4
+      displayName: 'Terraform Validate'  # ← was missing
+      inputs:
+        provider: 'azurerm'
+        command: 'validate'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure/env-${{ parameters.environment }}'
+
     - task: TerraformTaskV4@4
       displayName: 'Terraform Plan'
       inputs:
         provider: 'azurerm'
         command: 'plan'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure/env-dev'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure/env-${{ parameters.environment }}'
+        environmentServiceNameAzureRM: 'terraform-azure-devops-sp'  # service connection name
+
+    - task: TerraformTaskV4@4
+      displayName: 'Terraform Apply' 
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+      inputs:
+        provider: 'azurerm'
+        command: 'apply'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure/env-${{ parameters.environment }}'
+        environmentServiceNameAzureRM: 'terraform-azure-devops-sp'  # service connection name

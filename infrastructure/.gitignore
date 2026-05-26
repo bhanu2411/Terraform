@@ -1,0 +1,7 @@
+# .gitignore for Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars          ← prevents committing secrets in .tfvars files
+*.tfvars.json     ← prevents committing secrets in .tfvars.json files
+.terraform.lock.hcl should be committed (locks provider versions)

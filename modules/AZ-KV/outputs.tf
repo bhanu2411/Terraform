@@ -7,3 +7,6 @@ output "location" {
 output "resource_group_name" {
   value = azurerm_key_vault.kv.resource_group_name
 }
+variable "deploy" {
+  type = bool
+}

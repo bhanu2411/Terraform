@@ -17,3 +17,6 @@ variable "resourcegroupname" {
   type        = string
   
 }
+variable "deploy" {
+  type = bool
+}

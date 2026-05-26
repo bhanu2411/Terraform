@@ -13,3 +13,6 @@ variable "resourcegroupname" {
 variable "environment" {
   description = "Environment tag for the Storage Account"
 }
+variable "deploy" {
+  type = bool
+}

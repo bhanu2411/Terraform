@@ -1,7 +1,7 @@
 resource "azurerm_app_service_plan" "ASP" {
-  name                = "var.appserviceplanname"
-  location            = "var.location"
-  resource_group_name = "var.resourcegroupname"
+  name                = var.appserviceplanname
+  location            = var.location
+  resource_group_name = var.resourcegroupname
 
   sku {
     tier = "Standard"
@@ -10,9 +10,10 @@ resource "azurerm_app_service_plan" "ASP" {
 }
 
 resource "azurerm_windows_web_app" "WA" {
-  name                = "var.appservicename"
-  location            = "var.location"
-  resource_group_name = "var.resourcegroupname"
+  count                   = var.deploy ? 1 : 0
+  name                = var.appservicename
+  location            = var.location
+  resource_group_name = var.resourcegroupname
   service_plan_id     = azurerm_app_service_plan.ASP.id
   https_only          = true
 

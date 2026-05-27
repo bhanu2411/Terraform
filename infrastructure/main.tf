@@ -24,7 +24,7 @@ locals {
 
 # Create a resource group
 resource "azurerm_resource_group" "resource_group" {
-  name     = locals.resourcegroupname
+  name     = local.resourcegroupname
   location = var.location
 }
 

@@ -4,5 +4,5 @@ output "appservicename" {
 }
 output "appserviceplanname" {
   description = "Name of the App Service Plan"
-  value       = azurerm_app_service_plan.ASP[0].name
+  value       = azurerm_service_plan.ASP[0].name
 }
